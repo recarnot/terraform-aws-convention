@@ -2,10 +2,10 @@
 
 <p align="left">
 <a href="https://github.com/recarnot/terraform-aws-convention/"><img alt="Terraform version" src="https://img.shields.io/badge/Terraform-%3E%3D0.12-orange" /></a>
-<a href="https://registry.terraform.io/modules/recarnot/terraform-aws-convention/github/"><img alt="Terraform registry" src="https://img.shields.io/github/v/release/recarnot/terraform-aws-convention" /></a>
+<a href="https://registry.terraform.io/modules/recarnot/convention/aws/"><img alt="Terraform registry" src="https://img.shields.io/github/v/release/recarnot/terraform-aws-convention" /></a>
 <a href="https://github.com/recarnot/terraform-aws-convention/actions"><img alt="Plan check" src="https://github.com/recarnot/terraform-aws-convention/workflows/Plan%20check/badge.svg" /></a>
 <a href="https://github.com/recarnot/terraform-aws-convention/actions"><img alt="Security check" src="https://github.com/recarnot/terraform-aws-convention/workflows/Security%20check/badge.svg" /></a>
-<a href="https://registry.terraform.io/modules/recarnot/terraform-aws-convention/github/"><img alt="Terraform registry" src="https://img.shields.io/badge/Terraform-registry-blue" /></a>
+<a href="https://registry.terraform.io/modules/recarnot/convention/aws/"><img alt="Terraform registry" src="https://img.shields.io/badge/Terraform-registry-blue" /></a>
 </p>
 This [**Terraform**](https://www.terraform.io/) module allow to manage naming conventions for your resources and retrieves useful informations about  **[AWS](https://aws.amazon.com/fr/console/)** context currently used.
 
