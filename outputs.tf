@@ -18,7 +18,7 @@ output "prefix" {
   value       = local.prefix
 }
 
-output "label_formater" {
+output "label_formatter" {
   description = "Allow to format string using 'prefix', example : format(module.convention.label_formatter, 'my-value')"
   value       = local.label_formatter
 }
@@ -37,7 +37,7 @@ output "availability_zones" {
 }
 
 output "account_id" {
-  description = "The AWS Account ID number of the account that owns or contains the calling entit"
+  description = "The AWS Account ID number of the account that owns or contains the calling entity"
   value       = data.aws_caller_identity.current.account_id
 }
 

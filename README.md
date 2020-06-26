@@ -7,53 +7,135 @@
 <a href="https://github.com/recarnot/terraform-aws-convention/actions"><img alt="Security check" src="https://github.com/recarnot/terraform-aws-convention/workflows/Security%20check/badge.svg" /></a>
 <a href="https://registry.terraform.io/modules/recarnot/terraform-aws-convention/github/"><img alt="Terraform registry" src="https://img.shields.io/badge/Terraform-registry-blue" /></a>
 </p>
-
-
-This [**Terraform**](https://www.terraform.io/) module build a basic [**GitHub**](https://github.com/) repository to use **Terraform** **GitHub Actions** for Terraform **Cloud/Enterprise** for **[AWS](https://aws.amazon.com/fr/console/)** projects.
-
-A **backend** to connect to **Terraform** Cloud/Enterprise state management is created.
-
-Static security check can be added in workflow using GitHub Actions for [Checkov](https://www.checkov.io/) or [Bridgecrew](https://www.bridgecrew.cloud/) solutions.
-
-Use : [terraform-github-cicd-bootstrap](https://registry.terraform.io/modules/recarnot/cicd-bootstrap/github/) module
+This [**Terraform**](https://www.terraform.io/) module allow to manage naming conventions for your resources and retrieves useful informations about  **[AWS](https://aws.amazon.com/fr/console/)** context currently used.
 
 
 
 ## How to use
 
-You can use this module with Terraform **OSS** or Terraform **Cloud**/**Enterprise** to create and configure your new GitHub repository.
+You can use this module with Terraform **OSS** or Terraform **Cloud**/**Enterprise**.
 
 Just import the module and set variables :  
 
 ```typescript
-module "cicd_bootstrap_aws" {
-  source = "recarnot/cicd-bootstrap-aws/github"
+module "convention" {
+  source  = "recarnot//convention"
+    
+  context = "Projet alios"
+  stage   = "poc"
+  additional_tags = {
+    owner : "Romain"
+    cost_center : "c12345"
+    business_unit : "R6"
+  }
+}
 
-  github_token        = var.github_token
-  github_organization = var.github_organization
+resource "aws_vpc" "main" {
+  cidr_block = var.cidr_block
 
-  repository_name = var.project_name
+  tags = merge(
+    module.convention.tags,
+    {
+      Name : format(module.convention.label_formatter, "service-web")
+    }
+  )
+}
 
-  tf_organization = var.tf_organization
-  tf_token        = var.secret_tfc_token
-  tf_workspace    = var.project_name
+output "prefix" {
+    value = module.convention.prefix
+}
 
-  aws_access_key = var.aws_access_key
-  aws_secret_key = var.aws_secret_key
-  aws_region     = var.aws_region
+output "az_names" {
+    value = module.convention.availability_zones.names
 }
 ```
 
 
 
-Take a look at  [terraform-github-cicd-bootstrap](https://registry.terraform.io/modules/recarnot/cicd-bootstrap/github/) module documentation for more details.
+## Required Inputs
+
+These variables must be set in the module block when using this module.
+
+| Name    | Description                                                  | Type   |
+| ------- | ------------------------------------------------------------ | ------ |
+| context | Configuration context like project's name, organization, abbreviation.. | string |
+| stage   | Production, staging, UAT, Dev, ...                           | string |
 
 
 
-## Managed resources
+## Optional Inputs
 
-This module creates (in addition to the resources of the cicd-bootstrap module) :
+These variables have default values and don't have to be set to use this module. You may set these variables to override their default values.
 
-- Variables for AWS credentials in Terraform workspace
-- A *provider.tf* file with AWS Provider definition (using workspace variables)
+
+
+| Name                     | Description                                     | Type        | Default              |
+| ------------------------ | ----------------------------------------------- | ----------- | -------------------- |
+| additional_tags          | Additional tags                                 | map(string) | {}                   |
+| delimiter                | Delimiter to be used between `context`, `stage` | string      | -                    |
+| default_management_value | Default value for management label              | string      | managed-by-terraform |
+
+
+
+## Outputs
+
+These properties are exposed as module output.
+
+| Name               | Description                                                  | Type        |
+| ------------------ | ------------------------------------------------------------ | ----------- |
+| context            | Formatted `context` value without space or any special character | string      |
+| stage              | Formatted `stage` value without space or any special character | string      |
+| delimiter          | Delimiter used                                               | string      |
+| prefix             | Concatenation between `context`, `stage`, `delimiter`, example `myproject-dev` | string      |
+| label_formatter    | Allow to format string using `prefix`, example : format(module.convention.label_formatter, 'my-value') | string      |
+| tags               | Created tags map                                             | map(string) |
+| availability_zones | AWS Availability Zone informations                           | map(string) |
+| account_id         | The AWS Account ID number of the account that owns or contains the calling entity | string      |
+| region             | Current region informations                                  | map(string) |
+| billing            | Informations about Billing account for that account that owns or contains the calling entity | map(string) |
+
+
+
+#### tags
+
+Without `additional_tags`
+
+| Property   | Description                                                  | Type   |
+| ---------- | ------------------------------------------------------------ | ------ |
+| context    | Formatted `context` value without space or any special character | string |
+| location   | Location of used region, example `europe`                    | string |
+| management | Management label value, default `managed-by-terraform`       | string |
+| region     | Current used region human readable name, example `irlande`   | string |
+| stage      | Formatted `stage` value without space or any special character | string |
+
+
+
+#### availability_zones
+
+| Property | Description                         | Type         |
+| -------- | ----------------------------------- | ------------ |
+| count    | Number of AWS availability zones    | number       |
+| names    | List of AWS availability zone names | list(string) |
+
+
+
+#### region
+
+| Property     | Description                                                | Type   |
+| ------------ | ---------------------------------------------------------- | ------ |
+| id           | Current used region name                                   | string |
+| name         | Current used region human readable name, example `irlande` | string |
+| location     | Location of used region, example `europe`                  | string |
+| ec2_endpoint | The EC2 endpoint for the current used region               | string |
+
+
+
+#### billing
+
+| Property | Description                                | Type   |
+| -------- | ------------------------------------------ | ------ |
+| id       | The ID of the AWS billing service account  | string |
+| arn      | The ARN of the AWS billing service account | string |
+
+
 
